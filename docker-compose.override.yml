@@ -1,57 +1,24 @@
 version: '3.4'
-
-volumes:
-  netbox_data: 
-  netbox-media-files: 
-  netbox-reports-files:
-  netbox-scripts-files: 
-
 services:
-  postgres:
-    image: postgres:13 
-    environment:
-      POSTGRES_USER: netbox
-      POSTGRES_PASSWORD: netbox_password
-      POSTGRES_DB: netbox
-
-  redis:
-    image: redis:6 
-
-  redis-cache:
-    image: redis:6
-
   netbox:
-    image: netboxcommunity/netbox:latest
     ports:
-      - 8181:8080
+    - 8181:8181
     volumes:
-      - netbox_data:/etc/netbox/config:z,ro
-      - netbox-media-files:/opt/netbox/netbox/media:z,rw
-      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
+    - netbox-media-files:/opt/netbox/netbox/media:z,rw
+    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
     healthcheck:
       retries: 15
-    depends_on:
-      - postgres
-      - redis
-      - redis-cache
-
   netbox-worker:
-    image: netboxcommunity/netbox:latest 
     volumes:
-      - netbox_data:/etc/netbox/config:z,ro 
-      - netbox-media-files:/opt/netbox/netbox/media:z,rw
-      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
-    depends_on:
-      - netbox
-
+    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
+    - netbox-media-files:/opt/netbox/netbox/media:z,rw
+    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
   netbox-housekeeping:
-    image: netboxcommunity/netbox:latest 
     volumes:
-      - netbox_data:/etc/netbox/config:z,ro
-      - netbox-media-files:/opt/netbox/netbox/media:z,rw
-      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
-    depends_on:
-      - netbox
+    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
+    - netbox-media-files:/opt/netbox/netbox/media:z,rw
+    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
