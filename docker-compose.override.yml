@@ -1,24 +1,126 @@
 version: '3.4'
+
+volumes:
+  netbox_data: 
+  netbox-media-files: 
+  netbox-reports-files:
+  netbox-scripts-files: 
+
 services:
+  postgres:
+    image: postgres:13 
+    environment:
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox_password
+      POSTGRES_DB: netbox
+
+  redis:
+    image: redis:6 
+
+  redis-cache:
+    image: redis:6
+
   netbox:
+    image: netboxcommunity/netbox:latest
     ports:
-    - 8181:8181
+      - 8181:8181
     volumes:
-    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
-    - netbox-media-files:/opt/netbox/netbox/media:z,rw
-    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+      - netbox_data:/etc/netbox/config:z,ro
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
     healthcheck:
       retries: 15
+    depends_on:
+      - postgres
+      - redis
+      - redis-cache
+
   netbox-worker:
+    image: netboxcommunity/netbox:latest 
     volumes:
-    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
-    - netbox-media-files:/opt/netbox/netbox/media:z,rw
-    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+      - netbox_data:/etc/netbox/config:z,ro 
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    depends_on:
+      - netbox
+
   netbox-housekeeping:
+    image: netboxcommunity/netbox:latest 
     volumes:
-    - /var/lib/docker/volumes/netbox_data:/etc/netbox/config:z,ro
-    - netbox-media-files:/opt/netbox/netbox/media:z,rw
-    - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
-    - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+      - netbox_data:/etc/netbox/config:z,ro
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    depends_on:
+      - netbox
+Remember to replace placeholders like netbox_password with your actual values. This improved version addresses the potential issues and provides a more complete and robust configuration for your Netbox deployment.
+
+
+
+
+
+fix it so that they are declared
+
+
+
+YAML
+
+version: '3.4'
+
+volumes:
+  netbox_data: 
+  netbox-media-files: 
+  netbox-reports-files:
+  netbox-scripts-files: 
+
+services:
+  postgres:
+    image: postgres:13 
+    environment:
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox_password
+      POSTGRES_DB: netbox
+
+  redis:
+    image: redis:6 
+
+  redis-cache:
+    image: redis:6
+
+  netbox:
+    image: netboxcommunity/netbox:latest
+    ports:
+      - 8181:8181
+    volumes:
+      - netbox_data:/etc/netbox/config:z,ro
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    healthcheck:
+      retries: 15
+    depends_on:
+      - postgres
+      - redis
+      - redis-cache
+
+  netbox-worker:
+    image: netboxcommunity/netbox:latest 
+    volumes:
+      - netbox_data:/etc/netbox/config:z,ro 
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    depends_on:
+      - netbox
+
+  netbox-housekeeping:
+    image: netboxcommunity/netbox:latest 
+    volumes:
+      - netbox_data:/etc/netbox/config:z,ro
+      - netbox-media-files:/opt/netbox/netbox/media:z,rw
+      - netbox-reports-files:/opt/netbox/netbox/reports:z,rw
+      - netbox-scripts-files:/opt/netbox/netbox/scripts:z,rw
+    depends_on:
+      - netbox
