@@ -23,7 +23,7 @@ services:
   netbox:
     image: netboxcommunity/netbox:latest
     ports:
-      - 8181:8181
+      - 8181:8080
     volumes:
       - netbox_data:/etc/netbox/config:z,ro
       - netbox-media-files:/opt/netbox/netbox/media:z,rw
